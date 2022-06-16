@@ -1,0 +1,6 @@
+windows:
+  - name: popchef
+    root: ~/Documents/popchef
+    layout: tiled
+    panes:
+
