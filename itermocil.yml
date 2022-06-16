@@ -3,4 +3,12 @@ windows:
     root: ~/Documents/popchef
     layout: tiled
     panes:
-
+      - cd /Users/mathieuvie/Documents/popchef/b2b-api-data; npm run watch:logstderr;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-api-auth; npm run start:ts;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-api-public; npm run start:ts;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-front-public/src/semantic; npx gulp build-css build-assets; cd ../..; npm run start;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-api-internal; npm run start:ts;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-front-admin/src/semantic; npx gulp build-css build-assets; cd ../..; npm run start;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-front-managers/src/semantic; npx gulp build-css build-assets; cd ../..; npm run start;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-front-canteen-web-app/src/semantic; npx gulp build-css build-assets; cd ../..; npm run start;
+      - cd /Users/mathieuvie/Documents/popchef/b2b-api-html2pdf; npm run start:dev;

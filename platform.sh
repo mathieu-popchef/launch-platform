@@ -10,7 +10,7 @@
 #Variables
 ERROR=" "
 DEFAULT_REPOSITORY_PATH=~/Documents/popchef
-ITERMOCIL_PATH_FILE=~/Tools/itermocil
+ITERMOCIL_PATH_FILE=~/Tools/launch-platform/itermocil
 
 
 #Menu options
@@ -118,19 +118,19 @@ function LAUNCH_PROJECT() {
     for PROJECT in ${PROJECT_LIST}; do
 
         case $PROJECT in
-            # TODO: specify PORT for each front    
-            b2b-front-public|b2b-front-admin|b2b-front-managers|b2b-front-canteen-web-app) 
+            # TODO: specify PORT for each front
+            b2b-front-public|b2b-front-admin|b2b-front-managers|b2b-front-canteen-web-app)
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}/src/semantic; npx gulp build-css build-assets; cd ../..; npm run start;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
-            b2b-api-data) 
+            b2b-api-data)
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run watch:logstderr;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
-            b2b-api-auth|b2b-api-internal|b2b-api-public) 
-                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:ts;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;       
+            b2b-api-auth|b2b-api-internal|b2b-api-public)
+                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:ts;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
             b2b-api-html2pdf)
-                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:dev;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;       
+                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:dev;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
             *) echo "Nothing for ${PROJECT}"; ;;
         esac;
     done
-    
+
     # Launch itermocil
     itermocil ${ITERMOCIL_PATH_FILE}
 
