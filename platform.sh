@@ -141,6 +141,7 @@ function LAUNCH_PROJECT() {
 
 }
 
+cd ~/Tools/launch-platform; docker-compose up -d
 CHECK_REQUIRED_DEPENDENCIES
 ASK_PROJECT_USER_WANT_START
 PROJECT_LIST=$(echo "$(PROJECTS_NAME)" | tr '[:upper:]' '[:lower:]') # To lowercase
