@@ -11,7 +11,10 @@
 ERROR=" "
 DEFAULT_REPOSITORY_PATH=~/Documents/popchef
 ITERMOCIL_PATH_FILE=~/Tools/launch-platform/itermocil
-
+FRONT_B2B_FRONT_PUBLIC_PORT='3000'
+FRONT_B2B_FRONT_ADMIN_PORT=3001
+FRONT_B2B_FRONT_MANAGERS_PORT=3002
+FRONT_B2B_FRONT_CANTEEN_WEB_APP_PORT=3003
 
 #Menu options
 declare -a options=('b2b-api-data' 'b2b-api-auth' 'b2b-api-public' 'b2b-front-public' 'b2b-api-internal' 'b2b-front-admin' 'b2b-front-managers' 'b2b-front-canteen-web-app' 'b2b-api-html2pdf')
@@ -117,10 +120,12 @@ function LAUNCH_PROJECT() {
     yq 'del(.windows[].panes[])' -i ${ITERMOCIL_PATH_FILE}.yml
     for PROJECT in ${PROJECT_LIST}; do
 
+
         case $PROJECT in
-            # TODO: specify PORT for each front
             b2b-front-public|b2b-front-admin|b2b-front-managers|b2b-front-canteen-web-app)
-                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}/src/semantic; npx gulp build-css build-assets; cd ../..; npm run start;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
+                PORT=$(echo "FRONT_${PROJECT}_PORT" | tr '-' '_' | tr '[:lower:]' '[:upper:]')
+                echo "${PROJECT} -> $((${PORT}))"
+                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}/src/semantic; npx gulp build-css build-assets; cd ../..; PORT=$((${PORT})) npm run start;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
             b2b-api-data)
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run watch:logstderr;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
             b2b-api-auth|b2b-api-internal|b2b-api-public)
@@ -139,6 +144,6 @@ function LAUNCH_PROJECT() {
 CHECK_REQUIRED_DEPENDENCIES
 ASK_PROJECT_USER_WANT_START
 PROJECT_LIST=$(echo "$(PROJECTS_NAME)" | tr '[:upper:]' '[:lower:]') # To lowercase
-UPDATE_PROJECT
+#UPDATE_PROJECT
 LAUNCH_PROJECT
 
