@@ -124,16 +124,17 @@ function LAUNCH_PROJECT() {
                 PORT=$(echo "FRONT_${PROJECT}_PORT" | tr '-' '_' | tr '[:lower:]' '[:upper:]')
                 echo "${PROJECT} listen on $((${PORT}))"
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}/src/semantic; npx gulp build-css build-assets; cd ../..; PORT=$((${PORT})) npm run start;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
-            b2b-api-data)
+            b2b-api-data|b2b-api-internal|b2b-api-public)
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run watch:logstderr;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
-            b2b-api-auth|b2b-api-internal|b2b-api-public)
+            b2b-api-auth)
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:ts;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
             b2b-api-html2pdf)
               if [[ "$(docker images -q html2pdf:latest 2> /dev/null)" == "" ]]; then
                 echo "No image for 'html2pdf' found - build in progress"
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:dev;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml;
               else
-                  docker run -p 4040:4040 html2pdf
+                commandToExec="docker run -p 4040:4040 html2pdf" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml;
+
               fi ;;
             *) echo "Nothing for ${PROJECT}"; ;;
         esac;
@@ -144,7 +145,7 @@ function LAUNCH_PROJECT() {
 
 }
 
-cd ~/Tools/launch-platform; docker-compose up -d
+#cd ~/Tools/launch-platform; docker-compose up -d
 CHECK_REQUIRED_DEPENDENCIES
 ASK_PROJECT_USER_WANT_START
 PROJECT_LIST=$(echo "$(PROJECTS_NAME)" | tr '[:upper:]' '[:lower:]') # To lowercase

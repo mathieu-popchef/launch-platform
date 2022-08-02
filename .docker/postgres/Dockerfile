@@ -1,4 +1,4 @@
-FROM postgres:10.17-alpine
+FROM postgres:10.17
 
 LABEL maintainer="Mathieu PopChef - mathieu.vie@popchef.com"
 
