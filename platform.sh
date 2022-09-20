@@ -17,7 +17,7 @@ FRONT_B2B_FRONT_MANAGERS_PORT=3002
 FRONT_B2B_FRONT_CANTEEN_WEB_APP_PORT=3003
 
 #Menu options
-declare -a options=('b2b-api-data' 'b2b-api-auth' 'b2b-api-public' 'b2b-front-public' 'b2b-api-internal' 'b2b-front-admin' 'b2b-front-managers' 'b2b-front-canteen-web-app' 'b2b-api-html2pdf')
+declare -a options=('b2b-api-data' 'b2b-api-auth' 'b2b-api-public' 'b2b-api-internal' 'b2b-api-external' 'b2b-front-public'  'b2b-front-admin' 'b2b-front-managers' 'b2b-front-canteen-web-app')
 
 #Pre-check PROJECTs
 declare -a choices=( "${options[@]//*/+}" )
@@ -117,6 +117,9 @@ function UPDATE_PROJECT() {
 # DESCRIPTION: Launch each PROJECT with associated commands
 #=======================================================================================
 function LAUNCH_PROJECT() {
+
+
+
     yq 'del(.windows[].panes[])' -i ${ITERMOCIL_PATH_FILE}.yml
     for PROJECT in ${PROJECT_LIST}; do
         case $PROJECT in
@@ -126,19 +129,21 @@ function LAUNCH_PROJECT() {
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}/src/semantic; npx gulp build-css build-assets; cd ../..; PORT=$((${PORT})) npm run start;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
             b2b-api-data|b2b-api-internal|b2b-api-public)
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run watch:logstderr;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
+            b2b-api-external)
+                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run watch;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
             b2b-api-auth)
                 commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:ts;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml; ;;
-            b2b-api-html2pdf)
-              if [[ "$(docker images -q html2pdf:latest 2> /dev/null)" == "" ]]; then
-                echo "No image for 'html2pdf' found - build in progress"
-                commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:dev;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml;
-              else
-                commandToExec="docker run -p 4040:4040 html2pdf" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml;
-
-              fi ;;
             *) echo "Nothing for ${PROJECT}"; ;;
         esac;
     done
+
+    if [[ "$(docker images -q html2pdf:latest 2> /dev/null)" == "" ]]; then
+      echo "No image for 'html2pdf' found - build in progress"
+      commandToExec="cd ${DEFAULT_REPOSITORY_PATH}/${PROJECT}; npm run start:dev;" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml;
+    else
+      commandToExec="docker run -p 4040:4040 html2pdf" yq e '.windows.[].panes += [env(commandToExec)]' -i ${ITERMOCIL_PATH_FILE}.yml;
+
+    fi
 
     # Launch itermocil
     itermocil ${ITERMOCIL_PATH_FILE}
